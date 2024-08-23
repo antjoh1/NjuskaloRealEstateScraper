@@ -1,5 +1,9 @@
 # Njuskalo scraper
 
+--- Fork of @xxzoltanxx original scraper. This verion streamlines some of the code and focuses it to primarily scrape real estate inforation --- 
+
+--- Work in Progress --- 
+
 <h4>An open-source Python program to scrape Njuskalo using Playwright and BeautifulSoup.</h4>
 
 Use the software provided at your own risk. I cannot be held responsible for any potential consequences, including any potential damages.
@@ -27,8 +31,9 @@ python main.py
 ```
   {
     "name": "ADVERT NAME",
-    "location": "LOCATION DATA, KILOMETERS, YEAR OF CAR" ,
-    "time": "DATE POSTED",
+    "location": "LOCATION DATA" ,
+    "Living area": " ## m2 "
+    "Published": "DATE POSTED",
     "price": "PRICE"
   },
 ```
