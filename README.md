@@ -1,8 +1,8 @@
 # Njuskalo scraper
 
--- Fork of @xxzoltanxx original scraper. This verion streamlines some of the code and focuses it to primarily scrape real estate inforation -- 
+# -- Fork of @xxzoltanxx original scraper. This verion streamlines some of the code and focuses it to primarily scrape real estate inforation -- 
 
---- Work in Progress --- 
+# --- Work in Progress --- 
 
 <h4>An open-source Python program to scrape Njuskalo using Playwright and BeautifulSoup.</h4>
 
