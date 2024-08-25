@@ -15,8 +15,7 @@ Can crawl one of the tabs and store everything inside a directory, or crawl a cu
 
 class NjuskaloCrawler():
 
-    #Clicks on all popups which occur in a browser with an empty history
-    #visiting njuskalo.hr
+    #Clicks on all popups which occur in a browser with an empty history visiting njuskalo.hr
     def _initializeStartClicks(self, page):
         page.goto('https://www.njuskalo.hr')
         time.sleep(random.uniform(1.5,2.5))
@@ -30,21 +29,7 @@ class NjuskaloCrawler():
         except:
             print("Privacy notice button not found.")
 
-    #crawls whole tabs (Nekretnice, Marketplace, Auto Moto Nautika)
-    #options are TabCrawlingOptions
-    def crawlTab(self, options):
-        with sync_playwright() as playwright_launcher:
-            self._browser = playwright_launcher.chromium.launch_persistent_context(user_data_dir='', channel='chrome', headless=False, args=['--start-maximized'], no_viewport=True)
-            self._page = self._browser.new_page()
-
-            #Apply playwright stealth masking to page
-            stealth_sync(self._page)
-            tab_crawler = NjuskaloQueryCrawler.NjuskaloQueryCrawler()
-            self._initializeStartClicks(self._page)
-            tab_crawler.crawlSelectedTab(self._page, options)
-
-    #crawls a customHref (like '/od-glave-do-pete')
-    #options are CustomCategoryCrawlingOptions
+    #crawls a customHref (like '/od-glave-do-pete') options are CustomCategoryCrawlingOptions
     def crawlCustomCategory(self, options):
         with sync_playwright() as playwright_launcher:
             self._browser = playwright_launcher.chromium.launch_persistent_context(user_data_dir='', channel='chrome', headless=False, args=['--start-maximized'], no_viewport=True)

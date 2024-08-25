@@ -19,7 +19,6 @@ class NjuskaloQueryCrawler():
             entities.extend(vauVauEntityList.find_all('li', class_='EntityList-item'))
         return entities
     
-
     #Inserts a possible entity into parsed items which will be exported to the json
     def _crawlEntity(self, parsed_items, entity):
         if (entity.find('article', class_='entity-body') == None):
@@ -48,6 +47,7 @@ class NjuskaloQueryCrawler():
                             'price' : price_str.strip(),
                             'link' : link_str
                     })
+    
     #Write a category into a file on disk
     def _crawlCategoryLink(self, category_href, page, out_folder, page_limit):
         page.goto('https://www.njuskalo.hr' + category_href)

@@ -11,15 +11,6 @@ class CustomCategoryCrawlingOptions:
         self.pageLimit = pageLimit
         self.outFolder = outFolder
 
-class TabCrawlingOptions:
-    #tab: NjuskaloTab.AutoMoto, NjuskaloTab.Nekretnine, NjuskaloTab.Marketplace 
-    #pageLimit - the limit on the pages that are crawled
-    #outFolder - the directory where you want the data saved
-    def __init__(self, tab, outFolder, pageLimit = None):
-        self.tab = get_hyperlink_for_tab(tab)
-        self.pageLimit = pageLimit
-        self.outFolder = outFolder + "\\\\"
-
 def get_hyperlink_for_tab(tab):
     if (tab == NjuskaloTab.Marketplace):
         return 'https://www.njuskalo.hr/marketplace'
