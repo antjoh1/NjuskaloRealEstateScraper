@@ -1,6 +1,6 @@
 # Njuskalo scraper
 
-# -- Fork of @xxzoltanxx original scraper. This verion streamlines some of the code and focuses to primarily scrape real estate inforation -- 
+# -- Primarily scrapes real estate information -- 
 
 # --- Work in Progress --- 
 
