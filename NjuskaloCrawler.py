@@ -7,6 +7,7 @@ from CrawlingOptions import *
 import os
 import time
 import random
+import json
     
 """
 Scraper for https://www.njuskalo.hr/.
@@ -15,8 +16,12 @@ Can crawl one of the tabs and store everything inside a directory, or crawl a cu
 
 class NjuskaloCrawler():
 
+    def __init__(self):
+        self.out_file = ""
+
     #Clicks on all popups which occur in a browser with an empty history visiting njuskalo.hr
     def _initializeStartClicks(self, page):
+        
         page.goto('https://www.njuskalo.hr')
         time.sleep(random.uniform(1.5,2.5))
         try:
@@ -31,6 +36,7 @@ class NjuskaloCrawler():
 
     #crawls a customHref (like '/od-glave-do-pete') options are CustomCategoryCrawlingOptions
     def crawlCustomCategory(self, options):
+        
         with sync_playwright() as playwright_launcher:
             self._browser = playwright_launcher.chromium.launch_persistent_context(user_data_dir='', channel='chrome', headless=False, args=['--start-maximized'], no_viewport=True)
             self._page = self._browser.new_page()
@@ -40,3 +46,20 @@ class NjuskaloCrawler():
             tab_crawler = NjuskaloQueryCrawler.NjuskaloQueryCrawler()
             self._initializeStartClicks(self._page)
             tab_crawler.crawlSelectedCategory(self._page, options)
+
+        self.out_file = tab_crawler.out_file_path
+
+    def listingDeepDive(self, custom_out_file = None): 
+
+        if custom_out_file != None:
+            self.out_file = custom_out_file
+
+        with sync_playwright() as playwright_launcher: 
+            self._browser = playwright_launcher.chromium.launch_persistent_context(user_data_dir='', channel='chrome', headless=False, args=['--start-maximized'], no_viewport=True)
+            self._page = self._browser.new_page()
+
+            # Apply playwright stealth masking to page
+            stealth_sync(self._page)
+            listing_crawler = NjuskaloQueryCrawler.NjuskaloQueryCrawler()
+            # self._initializeStartClicks(self._page)
+            listing_crawler.listingCrawl(self._page, self.out_file)

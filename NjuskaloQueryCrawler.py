@@ -8,6 +8,7 @@ import re
 class NjuskaloQueryCrawler():
     #The blacklisted links which should be skipped
     blacklistedLinks = {'/luksuzne-nekretnine'}
+
     #Gets a list of all possible entities on the page. An entity is an entry to the njuskalo website.
     def _getPossibleEntities(self, soup):
         regularEntityList = soup.find('div', class_='EntityList--ListItemRegularAd')
@@ -43,9 +44,9 @@ class NjuskaloQueryCrawler():
                             'name' : name_str.strip(),
                             'location' : location_str.group(1),
                             'Living Area': living_area_str.group(0),
-                            'published' : published_str,
                             'price' : price_str.strip(),
-                            'link' : link_str
+                            'link' : link_str,
+                            'published' : published_str,
                     })
     
     #Write a category into a file on disk
@@ -56,12 +57,15 @@ class NjuskaloQueryCrawler():
         parsed_items_from_category = []
         charsToRemoveFromFilename='/?'
         charsToRemoveFromFilenameRegex = f'[{re.escape(charsToRemoveFromFilename)}]'
+        
         while (True):
             html_from_page = page.content()
             soup = BeautifulSoup(html_from_page, 'html.parser')
             entities = self._getPossibleEntities(soup)
 
-            file = open(os.path.join(out_folder, re.sub(charsToRemoveFromFilenameRegex, '', category_href) + '.json'), 'w', encoding='utf-8')
+            self.out_file_path = os.path.join(out_folder, re.sub(charsToRemoveFromFilenameRegex, '', category_href) + '.json')
+            
+            file = open(self.out_file_path, 'w', encoding='utf-8')
                 
             for entity in entities:
                 self._crawlEntity(parsed_items_from_category, entity)
@@ -120,6 +124,43 @@ class NjuskaloQueryCrawler():
 
             self._crawlCategoryLink(category_href, page, options.outFolder, options.pageLimit)
 
+    #DeepDive crawl for real-estate - extracts location data
+    def crawlMapData(self, listing_page, listing_json):
+
+        html_from_page = listing_page.content()
+        listing = BeautifulSoup(html_from_page, 'html.parser')
+
+        # Find lat/long string in html source
+        map_regex = r'"center":\[(\d+\.\d+),(\d+\.\d+)\].*?"lat":(\d+\.\d+),"lng":(\d+\.\d+),"approximate":true'
+        coordinates_matches = re.search(map_regex, html_from_page)
+
+        if coordinates_matches:
+            listing_json['coords'] = [coordinates_matches[2], coordinates_matches[1]] # [lat, long]
+        else: 
+            listing_json['coords'] = [None, None]
+        
+        
+    def listingCrawl(self, page, input_file):
+
+        page.goto('https://www.njuskalo.hr')
+        time.sleep(random.uniform(3,4.5))
+
+        with open(input_file, 'r') as data_file:
+            listings_json = json.load(data_file)
+
+        for listings in listings_json:
+            address = 'https://www.njuskalo.hr' + listings['link'] # access page
+            
+            page.goto(address)
+            time.sleep(random.uniform(3,4.5))
+
+            listings = self.crawlMapData(page, listings)
+
+        # Write 
+        with open(input_file, 'w') as data_file:
+            parsed_items_string_json = json.dumps(listings_json, ensure_ascii=False, indent=2)
+            data_file.write(parsed_items_string_json)
+    
     #If there is no page after this, returns None
     def _getNextPageLink(self, soup):
         try:
