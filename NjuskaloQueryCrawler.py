@@ -125,7 +125,7 @@ class NjuskaloQueryCrawler():
             self._crawlCategoryLink(category_href, page, options.outFolder, options.pageLimit)
 
     #DeepDive crawl for real-estate - extracts location data
-    def crawlMapData(self, listing_page, listing_json):
+    def detailListingCrawl(self, listing_page, listing_json):
 
         html_from_page = listing_page.content()
         listing = BeautifulSoup(html_from_page, 'html.parser')
@@ -138,7 +138,14 @@ class NjuskaloQueryCrawler():
             listing_json['coords'] = [coordinates_matches[2], coordinates_matches[1]] # [lat, long]
         else: 
             listing_json['coords'] = [None, None]
+
+        publisher_data = listing.find('h3', class_='ClassifiedDetailOwnerDetails-title')
         
+        if publisher_data:
+            listing_json['publisher'] = [publisher_data.a.text, publisher_data.a['href']]
+        else:
+            listing_json['publisher'] = 'Error'
+
         
     def listingCrawl(self, page, input_file):
 
@@ -154,7 +161,7 @@ class NjuskaloQueryCrawler():
             page.goto(address)
             time.sleep(random.uniform(3,4.5))
 
-            listings = self.crawlMapData(page, listings)
+            listings = self.detailListingCrawl(page, listings)
 
         # Write 
         with open(input_file, 'w') as data_file:
