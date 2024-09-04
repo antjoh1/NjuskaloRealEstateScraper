@@ -1,6 +1,4 @@
-# Njuskalo scraper
-
-## --- Primarily scrapes real estate information --- 
+# Njuskalo real estate scraper
 
 ## --- Work in Progress --- 
 
