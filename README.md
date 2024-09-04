@@ -1,44 +1,38 @@
 # Njuskalo scraper
 
-# --- Primarily scrapes real estate information --- 
+## --- Primarily scrapes real estate information --- 
 
-# --- Work in Progress --- 
+## --- Work in Progress --- 
 
-<h4>An open-source Python program to scrape Njuskalo using Playwright and BeautifulSoup.</h4>
+### Quick Preamble
+This repo is a fork of @xxzoltanxx's scraper repo. My repo extends functionality to enable the scraping of additional listing details from real estate listings, cleans up a few bugs and removes some code that wasn't needed here. While you can still use this to scrape any category on njuskalo, the data output is meant to support real-estate listings. 
 
-Use the software provided at your own risk. I cannot be held responsible for any potential consequences, including any potential damages.
+<h4>An open-source Python tool to scrape Njuskalo using Playwright and BeautifulSoup.</h4>
+
+Use the tool at your own risk - technically, scraping is only legal if used for non-commercial purposes and if the rate of scraping is not too fast. The current scrape has preset wait times to slow down some page calls to attempt to comply. That being said, I am not responsible for any consequences or damage that may result in the use of this tool.
+
 ### Overview
-This open-source program uses Python to scrape data from Njuskalo.hr. The program uses Playwright to navigate Njuskalo and BeautifulSoup to parse the HTML and extract relevant data. It then saves the data in json format inside the directory of your choosing.
+The program uses Playwright to navigate Njuskalo and BeautifulSoup to parse the HTML and extract relevant data. It then saves the data in json format inside the directory of your choosing.
 
-### Installing and usage
-1)Clone the repository
+Run the program by running main.py
 
-2)Navigate to the repository in your terminal
-
-3)Run:
-```
-pip install -r requirements.txt
-```
-
-4)Run the program with
-```
-python main.py
-```
-
-### Data format
+### Data output format
 ```
   {
-    "name": "ADVERT NAME",
-    "location": "LOCATION DATA" ,
-    "Living area": " ## m2 "
-    "Published": "DATE POSTED",
-    "price": "PRICE"
+    "name": NAME STRING,
+    "location": LOCATION STRING,
+    "Living Area": AREA STRING,
+    "price": PRICE STRING,
+    "link": LINK STRING,
+    "published": DATE STRING,
+    "coords": [
+      "LAT DOUBLE",
+      "LONG DOUBLE"
+    ],
+    "publisher": [
+      "NAME STRING",
+      "LINK STRING"
+    ]
   },
 ```
-
-### Requirements:
-- Python 3.x
-- Playwright
-- Streamlit
-- BeautifulSoup 
   
