@@ -96,36 +96,8 @@ class NjuskaloQueryCrawler():
 
         self._crawlCategoryLink(options.categoryHref, page, options.outFolder, options.pageLimit)
 
-    #The crawling mechanism
-    def crawlSelectedTab(self, page, options):
-        # Navigate to the URL.
-        page.goto(options.tab)
-
-        time.sleep(random.uniform(3,4.5))
-
-        html = page.content()
-        soup = BeautifulSoup(html, 'html.parser')
-
-        categories = soup.find_all('li', class_='Category')
-
-        categories.extend(soup.find_all('div', class_='Category'))
-
-        links_to_crawl = []
-        for category in categories:
-            category_links = category.find_all('a')
-            links_to_crawl.extend(category_links)
-
-        for link in links_to_crawl:
-            category_href = link['href']
-            if (category_href in self.blacklistedLinks):
-                print('Skipping: ' + category_href +'. Blacklisted.')
-                continue
-            print(category_href)
-
-            self._crawlCategoryLink(category_href, page, options.outFolder, options.pageLimit)
-
     #DeepDive crawl for real-estate - extracts location data
-    def detailListingCrawl(self, listing_page, listing_json):
+    def _getListingDetail(self, listing_page, listing_json):
 
         html_from_page = listing_page.content()
         listing = BeautifulSoup(html_from_page, 'html.parser')
@@ -147,7 +119,7 @@ class NjuskaloQueryCrawler():
             listing_json['publisher'] = 'Error'
 
         
-    def listingCrawl(self, page, input_file):
+    def listingsDetailCrawl(self, page, input_file):
 
         page.goto('https://www.njuskalo.hr')
         time.sleep(random.uniform(3,4.5))
@@ -161,7 +133,7 @@ class NjuskaloQueryCrawler():
             page.goto(address)
             time.sleep(random.uniform(3,4.5))
 
-            listings = self.detailListingCrawl(page, listings)
+            listings = self._getListingDetail(page, listings)
 
         # Write 
         with open(input_file, 'w') as data_file:

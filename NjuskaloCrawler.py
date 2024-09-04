@@ -62,4 +62,4 @@ class NjuskaloCrawler():
             stealth_sync(self._page)
             listing_crawler = NjuskaloQueryCrawler.NjuskaloQueryCrawler()
             # self._initializeStartClicks(self._page)
-            listing_crawler.listingCrawl(self._page, self.out_file)
+            listing_crawler.listingsDetailCrawl(self._page, self.out_file)

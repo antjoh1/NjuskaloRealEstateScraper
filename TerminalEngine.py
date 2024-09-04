@@ -24,14 +24,13 @@ splash_message = """
 *                                                  *
 ***************************************************
 
-
 """
 
-class TerminalEngine:
+class TerminalEngine():
 
-    def __init__(self):
+    def __init__(self, ):
         self.category_href = ''
-        self.page_num_option = None
+        self.page_lim = None
         self.data_folder = ''
         self.out_file = ''
     
@@ -41,24 +40,24 @@ class TerminalEngine:
 
         self.category_href = input()
 
-        print("Do you want a limit on the pages scraped? If you do enter the amount of pages, if not enter 0 or something which isn't a digit")
+        print("Do you want to limit the pages scraped? If not enter 0 or any non-digit value")
 
         choice = input()
 
         if (choice != '0' and choice.isdigit()):
-            self.page_num_option = int(choice)
+            self.page_lim = int(choice)
         
-        print("Enter the directory to save - input should be relative path!")
+        print("Enter output directory - input should be given as relative path!")
 
         self.data_folder = input()
 
-        options = CustomCategoryCrawlingOptions(self.category_href, self.data_folder, self.page_num_option)
+        options = CustomCategoryCrawlingOptions(self.category_href, self.data_folder, self.page_lim)
         self.crawler = NjuskaloCrawler()
         self.crawler.crawlCustomCategory(options = options)
 
-    def _runDeepScan(self, self_run_flag = False):
+    def _runDeepScan(self, run_only_deep_scan_flag = False):
 
-        match self_run_flag:
+        match run_only_deep_scan_flag:
             case True: 
                 print ('Provide a relative path to scrape results file (.json)')
 
@@ -79,7 +78,7 @@ class TerminalEngine:
                 else:
                     pass
 
-    def runCoreLoop(self):
+    def runCoreLoop(self, ):
         print(splash_message)
 
         print ('(1) I want to conduct a new scrape \n (2) I want to do a deepScan of an existing scrape \n')
@@ -93,5 +92,16 @@ class TerminalEngine:
             print ('Hope you like this tool! Please leave a star on github if you did :)! \n\n')
 
         elif choice == '2':
-            self._runDeepScan(True)
+            self._runDeepScan(run_only_deep_scan_flag=True)
             print ('Hope you like this tool! Please leave a star on github if you did :)! \n\n')
+
+
+    # def convertFileToGeoJson(self):
+    #     """ Convert dataclass to geojson dict """
+
+    #     property_data = self.__dict__
+    #     coord_data = Point(property_data.pop("coordinates"))
+
+    #     # print(property_data)
+
+    #     return Feature(geometry = coord_data, properties = property_data)
