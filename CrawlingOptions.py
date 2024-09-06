@@ -11,12 +11,12 @@ class CustomCategoryCrawlingOptions:
         self.pageLimit = pageLimit
         self.outFolder = outFolder
 
-def get_hyperlink_for_tab(tab):
-    if (tab == NjuskaloTab.Marketplace):
-        return 'https://www.njuskalo.hr/marketplace'
-    elif (tab == NjuskaloTab.AutoMoto):
-        return 'https://www.njuskalo.hr/auto-moto'
-    elif (tab == NjuskaloTab.Nekretnine):
-        return 'https://www.njuskalo.hr/nekretnine'
-    else:
-        return ''
+# def get_hyperlink_for_tab(tab):
+#     if (tab == NjuskaloTab.Marketplace):
+#         return 'https://www.njuskalo.hr/marketplace'
+#     elif (tab == NjuskaloTab.AutoMoto):
+#         return 'https://www.njuskalo.hr/auto-moto'
+#     elif (tab == NjuskaloTab.Nekretnine):
+#         return 'https://www.njuskalo.hr/nekretnine'
+#     else:
+#         return ''

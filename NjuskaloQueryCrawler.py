@@ -103,13 +103,16 @@ class NjuskaloQueryCrawler():
         listing = BeautifulSoup(html_from_page, 'html.parser')
 
         # Find lat/long string in html source
-        map_regex = r'"center":\[(\d+\.\d+),(\d+\.\d+)\].*?"lat":(\d+\.\d+),"lng":(\d+\.\d+),"approximate":true'
+        map_regex = r'"center":\[(\d+\.\d+),(\d+\.\d+)\].*?"lat":(\d+\.\d+),"lng":(\d+\.\d+),"approximate":(true|false)'
         coordinates_matches = re.search(map_regex, html_from_page)
 
         if coordinates_matches:
-            listing_json['coords'] = [coordinates_matches[2], coordinates_matches[1]] # [lat, long]
+            listing_json['coords'] = [float(coordinates_matches[1]), float(coordinates_matches[2])] # [lng, lat]
+            listing_json['approx_location'] = coordinates_matches[5]
         else: 
             listing_json['coords'] = [None, None]
+            listing_json['approx_location'] = None
+
 
         publisher_data = listing.find('h3', class_='ClassifiedDetailOwnerDetails-title')
         
@@ -135,7 +138,7 @@ class NjuskaloQueryCrawler():
 
             listings = self._getListingDetail(page, listings)
 
-        # Write 
+        # Write to file
         with open(input_file, 'w') as data_file:
             parsed_items_string_json = json.dumps(listings_json, ensure_ascii=False, indent=2)
             data_file.write(parsed_items_string_json)

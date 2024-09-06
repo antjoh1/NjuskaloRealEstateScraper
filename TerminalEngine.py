@@ -3,6 +3,8 @@ from NjuskaloCrawler import NjuskaloCrawler
 from CrawlingOptions import CustomCategoryCrawlingOptions
 from NjuskaloTab import NjuskaloTab
 from enum import Enum
+import json
+import geojson
 
 splash_message = """
 ****************************************************
@@ -75,10 +77,11 @@ class TerminalEngine():
 
                 if choice == '1':
                     self.crawler.listingDeepDive()
+                    # self.convertFileToGeoJson(file_choice)
                 else:
                     pass
 
-    def runCoreLoop(self, ):
+    def runCoreLoop(self):
         print(splash_message)
 
         print ('(1) I want to conduct a new scrape \n (2) I want to do a deepScan of an existing scrape \n')
@@ -96,12 +99,29 @@ class TerminalEngine():
             print ('Hope you like this tool! Please leave a star on github if you did :)! \n\n')
 
 
-    # def convertFileToGeoJson(self):
-    #     """ Convert dataclass to geojson dict """
+    def convertFileToGeoJson(self, target_json_file):
+        """ Convert scraped json file to geojson dict """
 
-    #     property_data = self.__dict__
-    #     coord_data = Point(property_data.pop("coordinates"))
+        new_target_file = target_json_file[:-5] + ".geojson"
+        features = []  # initialize feature list
 
-    #     # print(property_data)
+        with open(target_json_file, 'r') as f:
+            file_data = json.load(f)
 
-    #     return Feature(geometry = coord_data, properties = property_data)
+        for data_entry in file_data:
+            coord_data = data_entry.pop('coords')
+            
+            if None in coord_data:
+                coord_data = [13.6914, 44.327395] ## This is a random placeholder coordinate in the adriatic. Need to think of a better method for blanks coords
+
+            features.append(geojson.Feature(geometry = geojson.Point(coord_data), properties = data_entry))
+
+        with open(new_target_file, 'w') as data_file:
+            feature_collection_geojson = geojson.dumps(geojson.FeatureCollection(features))
+            data_file.write(feature_collection_geojson)
+
+if __name__  == '__main__':
+    file_name = 'scrape-output/prodaja-kuca.json'
+    aa = TerminalEngine()
+
+    aa.convertFileToGeoJson(file_name)
