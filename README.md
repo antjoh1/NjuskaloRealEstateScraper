@@ -7,12 +7,12 @@ This repo is a fork of @xxzoltanxx's scraper repo. My repo extends functionality
 
 <h4>An open-source Python tool to scrape Njuskalo using Playwright and BeautifulSoup.</h4>
 
-Use the tool at your own risk - technically, scraping is only legal if used for non-commercial purposes and if the rate of scraping is not too fast. The current scrape has preset wait times to slow down some page calls to attempt to comply. That being said, I am not responsible for any consequences or damage that may result in the use of this tool.
+Use the tool at your own risk.
 
 ### Overview
 The program uses Playwright to navigate Njuskalo and BeautifulSoup to parse the HTML and extract relevant data. It then saves the data in json format inside the directory of your choosing.
 
-Run the program by running main.py
+Run the program by running main.py - the program runs in terminal, you'll see a list of prompts that guide you to providing relevant inputs. 
 
 ### Data output format
 ```
