@@ -121,7 +121,7 @@ class TerminalEngine():
             data_file.write(feature_collection_geojson)
 
 if __name__  == '__main__':
-    file_name = 'scrape-output/prodaja-kuca.json'
+    file_name = 'scrape-output/prodaja-stanovazagreb.json'
     aa = TerminalEngine()
 
     aa.convertFileToGeoJson(file_name)
