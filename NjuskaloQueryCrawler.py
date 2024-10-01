@@ -122,26 +122,31 @@ class NjuskaloQueryCrawler():
             listing_json['publisher'] = 'Error'
 
         
-    def listingsDetailCrawl(self, page, input_file):
+    def listingsDetailCrawl(self, page, input_file, json_data):
 
         page.goto('https://www.njuskalo.hr')
         time.sleep(random.uniform(3,4.5))
 
-        with open(input_file, 'r') as data_file:
-            listings_json = json.load(data_file)
+        # with open(input_file, 'r') as data_file:
+        #     listings_json = json.load(data_file)
+        totalListingCount = len(json_data)
 
-        for listings in listings_json:
+        for ii, listings in enumerate(json_data):
+
+            print(f"Scraping {ii} out of {totalListingCount}")
+            
             address = 'https://www.njuskalo.hr' + listings['link'] # access page
             
-            page.goto(address)
+            
+            page.goto(address, timeout=150000)
             time.sleep(random.uniform(3,4.5))
 
             listings = self._getListingDetail(page, listings)
 
-        # Write to file
-        with open(input_file, 'w') as data_file:
-            parsed_items_string_json = json.dumps(listings_json, ensure_ascii=False, indent=2)
-            data_file.write(parsed_items_string_json)
+            # Write to file
+            with open(input_file, 'w') as data_file:
+                parsed_items_string_json = json.dumps(json_data, ensure_ascii=False, indent=2)
+                data_file.write(parsed_items_string_json)
     
     #If there is no page after this, returns None
     def _getNextPageLink(self, soup):

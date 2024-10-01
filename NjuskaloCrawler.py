@@ -54,6 +54,10 @@ class NjuskaloCrawler():
         if custom_out_file != None:
             self.out_file = custom_out_file
 
+            with open(custom_out_file, 'r') as data_file:
+                listings_json = json.load(data_file)
+
+
         with sync_playwright() as playwright_launcher: 
             self._browser = playwright_launcher.chromium.launch_persistent_context(user_data_dir='', channel='chrome', headless=False, args=['--start-maximized'], no_viewport=True)
             self._page = self._browser.new_page()
@@ -62,4 +66,4 @@ class NjuskaloCrawler():
             stealth_sync(self._page)
             listing_crawler = NjuskaloQueryCrawler.NjuskaloQueryCrawler()
             # self._initializeStartClicks(self._page)
-            listing_crawler.listingsDetailCrawl(self._page, self.out_file)
+            listing_crawler.listingsDetailCrawl(self._page, self.out_file, listings_json)
