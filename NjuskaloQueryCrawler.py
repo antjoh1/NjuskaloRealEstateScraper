@@ -12,7 +12,7 @@ class NjuskaloQueryCrawler():
     #Gets a list of all possible entities on the page. An entity is an entry to the njuskalo website.
     def _getPossibleEntities(self, soup):
         regularEntityList = soup.find('div', class_='EntityList--ListItemRegularAd')
-        vauVauEntityList = soup.find('div', class_='EntityList--VauVau')
+        vauVauEntityList = soup.find('div', class_='EntityList--VauVau') 
         entities = []
         if (regularEntityList != None):
             entities = regularEntityList.find_all('li', class_='EntityList-item')
@@ -34,17 +34,20 @@ class NjuskaloQueryCrawler():
 
         name_str = name_data.text
         link_str = name_data['href']
+        id_str = re.search(r'(?P<prefix>oglas-)(?P<id_num>\d+)')
         # location_str = entity.find('div', class_='entity-description-main').text
         published_str = entity.find('time').text
         price_str = entity.find('strong', class_='price--hrk').text
+        price_int = re.match(r'\d+', price_str.replace('.',''))
 
         print("Scraped " + name_str)
 
         parsed_items.append({
+                            'id': id_str.group('id_num'),
                             'name' : name_str.strip(),
                             'location' : location_str.group(1),
                             'Living Area': living_area_str.group(0),
-                            'price' : price_str.strip(),
+                            'price' : float(price_int[0]),
                             'link' : link_str,
                             'published' : published_str,
                     })
@@ -111,7 +114,7 @@ class NjuskaloQueryCrawler():
             listing_json['approx_location'] = coordinates_matches[5]
         else: 
             listing_json['coords'] = [None, None]
-            listing_json['approx_location'] = None
+            listing_json['approx_location'] = False
 
 
         publisher_data = listing.find('h3', class_='ClassifiedDetailOwnerDetails-title')
