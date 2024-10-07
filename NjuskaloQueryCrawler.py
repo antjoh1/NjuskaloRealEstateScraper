@@ -34,11 +34,11 @@ class NjuskaloQueryCrawler():
 
         name_str = name_data.text
         link_str = name_data['href']
-        id_str = re.search(r'(?P<prefix>oglas-)(?P<id_num>\d+)')
+        id_str = re.search(r'(?P<prefix>oglas-)(?P<id_num>\d+)', link_str)
         # location_str = entity.find('div', class_='entity-description-main').text
         published_str = entity.find('time').text
         price_str = entity.find('strong', class_='price--hrk').text
-        price_int = re.match(r'\d+', price_str.replace('.',''))
+        price_int = re.match(r'(?P<price>\d+)', price_str.strip().replace('.',''))
 
         print("Scraped " + name_str)
 
@@ -47,7 +47,7 @@ class NjuskaloQueryCrawler():
                             'name' : name_str.strip(),
                             'location' : location_str.group(1),
                             'Living Area': living_area_str.group(0),
-                            'price' : float(price_int[0]),
+                            'price' : float(price_int.group('price')),
                             'link' : link_str,
                             'published' : published_str,
                     })
@@ -141,7 +141,8 @@ class NjuskaloQueryCrawler():
             address = 'https://www.njuskalo.hr' + listings['link'] # access page
             
             
-            page.goto(address, timeout=150000)
+            # page.goto(address, timeout=150000, waitUntil='load')
+            page.goto(address, timeout=600000)
             time.sleep(random.uniform(3,4.5))
 
             listings = self._getListingDetail(page, listings)

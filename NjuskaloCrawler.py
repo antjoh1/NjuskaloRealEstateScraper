@@ -18,6 +18,7 @@ class NjuskaloCrawler():
 
     def __init__(self):
         self.out_file = ""
+        self.listings_json = []
 
     #Clicks on all popups which occur in a browser with an empty history visiting njuskalo.hr
     def _initializeStartClicks(self, page):
