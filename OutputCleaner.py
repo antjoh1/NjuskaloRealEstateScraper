@@ -18,3 +18,5 @@ if __name__ == '__main__':
 
     a = OutputCleaner()
     test = a.cleanDuplicates(file_name)
+
+    print ("hello world")
