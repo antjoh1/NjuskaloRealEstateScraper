@@ -140,10 +140,9 @@ class NjuskaloQueryCrawler():
             
             address = 'https://www.njuskalo.hr' + listings['link'] # access page
             
-            
             # page.goto(address, timeout=150000, waitUntil='load')
             page.goto(address, timeout=600000)
-            time.sleep(random.uniform(3,4.5))
+            time.sleep(random.uniform(3.0,5.0))
 
             listings = self._getListingDetail(page, listings)
 

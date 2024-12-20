@@ -20,9 +20,8 @@ class NjuskaloCrawler():
         self.out_file = ""
         self.listings_json = []
 
-    #Clicks on all popups which occur in a browser with an empty history visiting njuskalo.hr
+    # Clicks on all popups which occur in a browser with an empty history visiting njuskalo.hr
     def _initializeStartClicks(self, page):
-        
         page.goto('https://www.njuskalo.hr')
         time.sleep(random.uniform(1.5,2.5))
         try:
@@ -60,7 +59,9 @@ class NjuskaloCrawler():
 
 
         with sync_playwright() as playwright_launcher: 
-            self._browser = playwright_launcher.chromium.launch_persistent_context(user_data_dir='', channel='chrome', headless=False, args=['--start-maximized'], no_viewport=True)
+            self._browser = playwright_launcher.chromium.launch_persistent_context(user_data_dir='', channel='chrome', 
+                                                                                   headless=False, args=['--start-maximized'], 
+                                                                                   no_viewport=True)
             self._page = self._browser.new_page()
 
             # Apply playwright stealth masking to page
