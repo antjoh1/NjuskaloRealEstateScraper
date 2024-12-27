@@ -5,6 +5,7 @@ from NjuskaloTab import NjuskaloTab
 from enum import Enum
 import json
 import geojson
+import os 
 
 splash_message = """
 ****************************************************
@@ -76,7 +77,8 @@ class TerminalEngine():
                 choice = input()
 
                 if choice == '1':
-                    self.crawler.listingDeepDive()
+                    target_file = self.data_folder + '/' + self.category_href.replace('/', '') + '.json'
+                    self.crawler.listingDeepDive(target_file)
                     # self.convertFileToGeoJson(file_choice)
                 else:
                     pass

@@ -10,8 +10,8 @@ import random
 import json
     
 """
-Scraper for https://www.njuskalo.hr/.
-Can crawl one of the tabs and store everything inside a directory, or crawl a custom category url(http:)
+    Scraper for https://www.njuskalo.hr/.
+    Can crawl one of the tabs and store everything inside a directory, or crawl a custom category url(http:)
 """
 
 class NjuskaloCrawler():
@@ -49,7 +49,7 @@ class NjuskaloCrawler():
 
         self.out_file = tab_crawler.out_file_path
 
-    def listingDeepDive(self, custom_out_file = None): 
+    def listingDeepDive(self, custom_out_file = None, num_of_pages = 5): 
 
         if custom_out_file != None:
             self.out_file = custom_out_file
@@ -62,10 +62,15 @@ class NjuskaloCrawler():
             self._browser = playwright_launcher.chromium.launch_persistent_context(user_data_dir='', channel='chrome', 
                                                                                    headless=False, args=['--start-maximized'], 
                                                                                    no_viewport=True)
-            self._page = self._browser.new_page()
+            # self._page = self._browser.new_page()
+            self._page = [self._browser.new_page() for index in range(num_of_pages)]
+            
+            # Apply playwright stealth masking to page
+            for ii, page in enumerate(self._page):
+                stealth_sync(self._page[ii])
 
             # Apply playwright stealth masking to page
-            stealth_sync(self._page)
+            # stealth_sync(self._page)
             listing_crawler = NjuskaloQueryCrawler.NjuskaloQueryCrawler()
             # self._initializeStartClicks(self._page)
-            listing_crawler.listingsDetailCrawl(self._page, self.out_file, listings_json)
+            listing_crawler.listingsDetailCrawl2(self._page, self.out_file, listings_json)

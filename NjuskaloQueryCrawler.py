@@ -4,6 +4,7 @@ import time
 import os
 import random
 import re
+import itertools
 
 class NjuskaloQueryCrawler():
     #The blacklisted links which should be skipped
@@ -38,7 +39,13 @@ class NjuskaloQueryCrawler():
         # location_str = entity.find('div', class_='entity-description-main').text
         published_str = entity.find('time').text
         price_str = entity.find('strong', class_='price--hrk').text
-        price_int = re.match(r'(?P<price>\d+)', price_str.strip().replace('.',''))
+        price_value = re.match(r'(?P<price>\d+)', price_str.strip().replace('.',''))
+
+        # Check if price_int is not a number and change to usable value
+        if price_value: 
+            price_value = float(price_value.group('price'))
+        else:
+            price_value = 0.0
 
         print("Scraped " + name_str)
 
@@ -47,9 +54,10 @@ class NjuskaloQueryCrawler():
                             'name' : name_str.strip(),
                             'location' : location_str.group(1),
                             'Living Area': living_area_str.group(0),
-                            'price' : float(price_int.group('price')),
+                            'price' : price_value,
                             'link' : link_str,
                             'published' : published_str,
+                            'detailCheck' : False  # flag to check if deepScan was done 
                     })
     
     #Write a category into a file on disk
@@ -94,8 +102,7 @@ class NjuskaloQueryCrawler():
     #The crawling mechanism for user picked categories:
     def crawlSelectedCategory(self, page, options):
         page.goto('https://www.njuskalo.hr')
-
-        time.sleep(random.uniform(3,4.5))
+        time.sleep(random.uniform(1.0, 3.0))
 
         self._crawlCategoryLink(options.categoryHref, page, options.outFolder, options.pageLimit)
 
@@ -105,17 +112,16 @@ class NjuskaloQueryCrawler():
         html_from_page = listing_page.content()
         listing = BeautifulSoup(html_from_page, 'html.parser')
 
-        # Find lat/long string in html source
-        map_regex = r'"center":\[(\d+\.\d+),(\d+\.\d+)\].*?"lat":(\d+\.\d+),"lng":(\d+\.\d+),"approximate":(true|false)'
-        coordinates_matches = re.search(map_regex, html_from_page)
+        # Find lat/long string in html source -- "center":[15.94798,45.783615],"defaultMarker":{"lat":45.783615,"lng":15.94798,"approximate":true
+        map_regex = r'"center":\[\s*(?P<lng>-?\d+\.\d+)\s*,\s*(?P<lat>-?\d+\.\d+)\s*\].*?"approximate":\s*(?P<approximate>true|false)'
+        coordinates_matches = re.search(map_regex, html_from_page) # search finds a match... but match doesn't
 
         if coordinates_matches:
-            listing_json['coords'] = [float(coordinates_matches[1]), float(coordinates_matches[2])] # [lng, lat]
-            listing_json['approx_location'] = coordinates_matches[5]
+            listing_json['coords'] = [float(coordinates_matches.group('lng')), float(coordinates_matches.group('lat'))] # [lng, lat]
+            listing_json['approx_location'] = coordinates_matches.group('approximate')
         else: 
             listing_json['coords'] = [None, None]
-            listing_json['approx_location'] = False
-
+            listing_json['approx_location'] = True
 
         publisher_data = listing.find('h3', class_='ClassifiedDetailOwnerDetails-title')
         
@@ -124,33 +130,65 @@ class NjuskaloQueryCrawler():
         else:
             listing_json['publisher'] = 'Error'
 
-        
-    def listingsDetailCrawl(self, page, input_file, json_data):
+        listing_json['detailCheck'] = True  # if sucessfull - change flag to true
 
-        page.goto('https://www.njuskalo.hr')
-        time.sleep(random.uniform(3,4.5))
+        return listing_json
 
-        # with open(input_file, 'r') as data_file:
-        #     listings_json = json.load(data_file)
-        totalListingCount = len(json_data)
+    def listingsDetailCrawl2(self, pages, input_file, json_data):
 
-        for ii, listings in enumerate(json_data):
+        # iterable cycle equivalent to pages length
+        page_cycler = itertools.cycle(range(len(pages)))
 
-            print(f"Scraping {ii} out of {totalListingCount}")
+        for page in pages:   
+            page.goto('https://www.njuskalo.hr')
+            time.sleep(random.uniform(1.0, 1.5))
+
+        # Total number of listings 
+        total_listing_count = len(json_data)
+        remaining_listing_count = len(json_data)
+        counter = 0
+
+        while remaining_listing_count > 0:
+
+            for cycleVal in page_cycler:
+                if (remaining_listing_count <= 0) or (counter+cycleVal > len(json_data)):
+                    break
+
+                active_listing = json_data[counter+cycleVal]
+                remaining_listing_count -= 1 # reduce remaining list by # of active tabs
+
+                # print(f"Scraping {counter} out of {total_listing_count}")
+                address = 'https://www.njuskalo.hr' + active_listing['link'] # access page
+
+                try: # try opening the page - if times out, just continue to next one. 
+                    pages[cycleVal].goto(address, timeout=6000)
+                
+                except: 
+                    continue
+
+                if cycleVal == len(pages)-1: # Break after one cycle
+                    break
+
+            for ii, page in enumerate(pages):
+
+                try: 
+                    active_listing = json_data[counter+ii]
+                except: 
+                    continue
+
+                if active_listing['detailCheck'] == False: 
+                    print(f"Scraping {counter+ii} out of {total_listing_count}")
+                    # address = 'https://www.njuskalo.hr' + active_listing['link'] # access page
+                    time.sleep(random.uniform(0.47, 0.83))
+                    self._getListingDetail(page, active_listing)
+
+                
+                    with open(input_file, 'w') as data_file:
+                        parsed_items_string_json = json.dumps(json_data, ensure_ascii=False, indent=2)
+                        data_file.write(parsed_items_string_json)
             
-            address = 'https://www.njuskalo.hr' + listings['link'] # access page
-            
-            # page.goto(address, timeout=150000, waitUntil='load')
-            page.goto(address, timeout=600000)
-            time.sleep(random.uniform(3.0,5.0))
+            counter += len(pages) # update counter to check the next set of pages       
 
-            listings = self._getListingDetail(page, listings)
-
-            # Write to file
-            with open(input_file, 'w') as data_file:
-                parsed_items_string_json = json.dumps(json_data, ensure_ascii=False, indent=2)
-                data_file.write(parsed_items_string_json)
-    
     #If there is no page after this, returns None
     def _getNextPageLink(self, soup):
         try:
