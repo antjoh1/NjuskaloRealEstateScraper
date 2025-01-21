@@ -157,12 +157,17 @@ class NjuskaloQueryCrawler():
                 active_listing = json_data[counter+cycleVal]
                 remaining_listing_count -= 1 # reduce remaining list by # of active tabs
 
+                if active_listing['detailCheck'] == True:
+                    if cycleVal == len(pages)-1:
+                        break
+                    else:
+                        continue
+
                 # print(f"Scraping {counter} out of {total_listing_count}")
                 address = 'https://www.njuskalo.hr' + active_listing['link'] # access page
 
                 try: # try opening the page - if times out, just continue to next one. 
                     pages[cycleVal].goto(address, timeout=6000)
-                
                 except: 
                     continue
 

@@ -49,7 +49,7 @@ class NjuskaloCrawler():
 
         self.out_file = tab_crawler.out_file_path
 
-    def listingDeepDive(self, custom_out_file = None, num_of_pages = 5): 
+    def listingDeepDive(self, custom_out_file = None, num_of_pages = 10): 
 
         if custom_out_file != None:
             self.out_file = custom_out_file
